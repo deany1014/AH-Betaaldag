@@ -30,44 +30,80 @@ function getNextPayday() {
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
     const nowInMinutes = currentHour * 60 + currentMinute;
-    const todayString = now.toISOString().split('T')[0];
+    
+    // Parse vandaag correct
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const day = now.getDate();
+    const today = new Date(year, month, day);
 
     // Zoek eerste betaaldag die nog moet komen
     for (let payday of paydaysData.betaaldagen_2026) {
         const paydayDateString = payday.datum;
         
-        if (paydayDateString >= todayString) {
-            const date = new Date(payday.datum);
+        // Parse betaaldag correct uit YYYY-MM-DD format
+        const [payYear, payMonth, payDay] = paydayDateString.split('-').map(Number);
+        const paydayDate = new Date(payYear, payMonth - 1, payDay);
+        
+        // Als betaaldag in de toekomst is (na vandaag)
+        if (paydayDate > today) {
+            const date = new Date(payYear, payMonth - 1, payDay);
+            date.setHours(7, 30, 0, 0);
+            return date;
+        }
+        
+        // Check of dit vandaag is
+        if (paydayDate.getTime() === today.getTime()) {
+            const paymentStart = 7 * 60 + 30; // 07:30 in minuten
+            const paymentEnd = 12 * 60; // 12:00 in minuten
             
-            // Check of vandaag betaaldatum is en betalingen al begonnen zijn (na 07:30)
-            if (paydayDateString === todayString) {
-                const paymentStart = 7 * 60 + 30; // 07:30 in minuten
-                const paymentEnd = 12 * 60; // 12:00 in minuten
-                
-                // Als het tussen 07:30 en 12:00 is, wacht tot 12:00
-                if (nowInMinutes >= paymentStart && nowInMinutes < paymentEnd) {
-                    date.setHours(12, 0, 0, 0);
-                    return date;
-                }
-                // Als het voor 07:30 is, zet naar 07:30
-                else if (nowInMinutes < paymentStart) {
-                    date.setHours(7, 30, 0, 0);
-                    return date;
-                }
-                // Als het na 12:00 is, ga naar volgende betaaldag
-                else {
-                    continue;
-                }
-            } else {
-                // Andere dagen: zet naar 07:30
+            // Als het tussen 07:30 en 12:00 is, wacht tot 12:00
+            if (nowInMinutes >= paymentStart && nowInMinutes < paymentEnd) {
+                const date = new Date(payYear, payMonth - 1, payDay);
+                date.setHours(12, 0, 0, 0);
+                return date;
+            }
+            // Als het voor 07:30 is, zet naar 07:30
+            else if (nowInMinutes < paymentStart) {
+                const date = new Date(payYear, payMonth - 1, payDay);
                 date.setHours(7, 30, 0, 0);
                 return date;
             }
+            // Als het na 12:00 is, ga naar volgende betaaldag (continue loop)
         }
     }
 
     // Als geen betaaldag gevonden, return 1 januari volgende jaar
-    return new Date(now.getFullYear() + 1, 0, 1, 7, 30, 0, 0);
+    return new Date(year + 1, 0, 1, 7, 30, 0, 0);
+}
+
+// Krijg de volgende betaaldag data inclusief personeelskorting
+function getNextPaydayData() {
+    if (!paydaysData || !paydaysData.betaaldagen_2026) {
+        return { datum: null, personeelskorting: false };
+    }
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const day = now.getDate();
+    const today = new Date(year, month, day);
+
+    // Zoek eerste betaaldag die nog moet komen
+    for (let payday of paydaysData.betaaldagen_2026) {
+        const paydayDateString = payday.datum;
+        
+        // Parse betaaldag correct uit YYYY-MM-DD format
+        const [payYear, payMonth, payDay] = paydayDateString.split('-').map(Number);
+        const paydayDate = new Date(payYear, payMonth - 1, payDay);
+        
+        // Als betaaldag in de toekomst is of vandaag is
+        if (paydayDate >= today) {
+            return payday;
+        }
+    }
+
+    return { datum: null, personeelskorting: false };
 }
 
 // Format datum naar Nederlands formaat
@@ -103,6 +139,14 @@ function isPaymentInProgress() {
 // Update countdown display met animatie
 function updateCountdown() {
     const now = new Date().getTime();
+    const currentHour = new Date().getHours();
+    
+    // Om 02:00 's nachts reset de confetti en andere state
+    if (currentHour === 2 && confettiTriggered) {
+        confettiTriggered = false;
+        console.log('🔄 02:00 - Confetti reset voor volgende dag');
+    }
+    
     const isPaymentTime = isPaymentInProgress();
     
     const countdownDisplay = document.querySelector('.countdown-display');
@@ -124,6 +168,12 @@ function updateCountdown() {
         const payday = getNextPayday().getTime();
         const distance = payday - now;
 
+        // Als countdown negatief wordt, reset en herbereken
+        if (distance < 0) {
+            console.log('⚠️ Countdown negatief, resetting...');
+            confettiTriggered = false;
+        }
+
         // Bereken tijd eenheden
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -143,6 +193,19 @@ function updateCountdown() {
 
         // Update betaaldag datum
         document.getElementById('payday-date').textContent = formatDate(getNextPayday());
+        
+        // Update personeelskorting info
+        const paydayData = getNextPaydayData();
+        const kortingElement = document.getElementById('korting-info');
+        if (kortingElement) {
+            if (paydayData.personeelskorting) {
+                kortingElement.textContent = '💚 Met personeelskorting - Je krijgt extra!';
+                kortingElement.className = 'korting-info korting-yes';
+                kortingElement.style.display = 'block';
+            } else {
+                kortingElement.style.display = 'none';
+            }
+        }
 
         // Check of countdown af is (0 seconden OF negatief)
         if (distance <= 1000) { // Trigger wanneer minder dan 1 seconde over is

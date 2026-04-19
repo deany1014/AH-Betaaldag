@@ -3,15 +3,15 @@
     { "datum": "2026-01-05", "periode": 1, "personeelskorting": true },
     { "datum": "2026-02-02", "periode": 2, "personeelskorting": false },
     { "datum": "2026-03-02", "periode": 3, "personeelskorting": false },
-    { "datum": "2026-03-30", "periode": 4, "personeelskorting": true },
-    { "datum": "2026-04-27", "periode": 5, "personeelskorting": false },
+    { "datum": "2026-03-30", "periode": 4, "personeelskorting": false },
+    { "datum": "2026-04-27", "periode": 5, "personeelskorting": true },
     { "datum": "2026-05-25", "periode": 6, "personeelskorting": false },
-    { "datum": "2026-06-22", "periode": 7, "personeelskorting": true },
-    { "datum": "2026-07-20", "periode": 8, "personeelskorting": false },
+    { "datum": "2026-06-22", "periode": 7, "personeelskorting": false },
+    { "datum": "2026-07-20", "periode": 8, "personeelskorting": true },
     { "datum": "2026-08-17", "periode": 9, "personeelskorting": false },
     { "datum": "2026-09-14", "periode": 10, "personeelskorting": false },
-    { "datum": "2026-10-12", "periode": 11, "personeelskorting": true },
-    { "datum": "2026-11-09", "periode": 12, "personeelskorting": false },
+    { "datum": "2026-10-12", "periode": 11, "personeelskorting": false },
+    { "datum": "2026-11-09", "periode": 12, "personeelskorting": true },
     { "datum": "2026-12-07", "periode": 13, "personeelskorting": false }
   ]
 }
