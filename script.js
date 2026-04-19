@@ -84,12 +84,16 @@ function getNextPaydayData() {
     }
 
     const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const nowInMinutes = currentHour * 60 + currentMinute;
+    
     const year = now.getFullYear();
     const month = now.getMonth();
     const day = now.getDate();
     const today = new Date(year, month, day);
 
-    // Zoek eerste betaaldag die nog moet komen
+    // Zoek eerste betaaldag die nog moet komen (zelfde logica als getNextPayday)
     for (let payday of paydaysData.betaaldagen_2026) {
         const paydayDateString = payday.datum;
         
@@ -97,9 +101,25 @@ function getNextPaydayData() {
         const [payYear, payMonth, payDay] = paydayDateString.split('-').map(Number);
         const paydayDate = new Date(payYear, payMonth - 1, payDay);
         
-        // Als betaaldag in de toekomst is of vandaag is
-        if (paydayDate >= today) {
+        // Als betaaldag in de toekomst is (na vandaag)
+        if (paydayDate > today) {
             return payday;
+        }
+        
+        // Check of dit vandaag is
+        if (paydayDate.getTime() === today.getTime()) {
+            const paymentStart = 7 * 60 + 30; // 07:30 in minuten
+            const paymentEnd = 12 * 60; // 12:00 in minuten
+            
+            // Als het tussen 07:30 en 12:00 is, dit is nog de huidige dag
+            if (nowInMinutes >= paymentStart && nowInMinutes < paymentEnd) {
+                return payday;
+            }
+            // Als het voor 07:30 is, dit is nog de huidige dag
+            else if (nowInMinutes < paymentStart) {
+                return payday;
+            }
+            // Als het na 12:00 is, ga naar volgende betaaldag (continue loop)
         }
     }
 
