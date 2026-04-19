@@ -148,13 +148,13 @@ function updateCountdown() {
         if (distance <= 1000) { // Trigger wanneer minder dan 1 seconde over is
             console.log('⚠️ Distance is <= 1000ms, checken voor celebration...', distance);
             
-            if (distance <= 0) {
+            if (distance <= 1000 && !confettiTriggered) {
                 console.log('✅ CELEBRATION TRIGGERED! Distance:', distance);
                 
                 document.getElementById('days').textContent = '00';
                 document.getElementById('hours').textContent = '00';
                 document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
+                document.getElementById('seconds').textContent = '01'; // Toon 01 seconde
                 
                 // Voeg celebration effect toe
                 const card = document.querySelector('.countdown-card');
@@ -163,22 +163,18 @@ function updateCountdown() {
                     console.log('💚 Celebration class toegevoegd');
                     
                     // Voeg confetti slechts één keer toe
-                    if (!confettiTriggered) {
-                        confettiTriggered = true;
-                        console.log('🎉 Confetti triggeren in 300ms...');
-                        setTimeout(() => {
-                            console.log('🎉 CreateConfetti() wordt nu aangeroepen!');
-                            createConfetti();
-                        }, 300);
-                    }
+                    confettiTriggered = true;
+                    console.log('🎉 Confetti triggeren in 300ms...');
+                    setTimeout(() => {
+                        console.log('🎉 CreateConfetti() wordt nu aangeroepen!');
+                        createConfetti();
+                    }, 300);
                 }
             }
         } else {
             document.querySelector('.countdown-card').classList.remove('celebration');
             // Reset confetti flag als countdown weer verder gaat
-            if (distance > 1000) {
-                confettiTriggered = false;
-            }
+            confettiTriggered = false;
         }
     }
 }
