@@ -231,17 +231,22 @@ console.log('💡 Tip: Typ testConfetti() in console om confetti te testen!');
 // Voeg interactieve effecten toe bij muisbeweging
 document.addEventListener('mousemove', (e) => {
     const cards = document.querySelectorAll('.countdown-card, .motivation-card');
+    const MAX_ROTATION = 30; // Maximaal 60 graden rotatie
     
     cards.forEach(card => {
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Subtle shine effect
+        // Subtle shine effect met limiet
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        const angleX = (y - centerY) / 10;
-        const angleY = (x - centerX) / 10;
+        let angleX = (y - centerY) / 10;
+        let angleY = (x - centerX) / 10;
+        
+        // Limiet de rotatie
+        angleX = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, angleX));
+        angleY = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, angleY));
 
         card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
     });
