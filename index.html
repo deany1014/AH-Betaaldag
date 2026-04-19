@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AH Betaaldag Aftelling</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-gradient"></div>
+    
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 class="title">🏪 AH Betaaldag</h1>
+                <p class="subtitle">Nog even en het salaris staat op je rekening!</p>
+            </div>
+        </header>
+
+        <main>
+            <div class="countdown-card">
+                <div class="countdown-header">
+                    <h2>Aftelling naar Betaaldag</h2>
+                </div>
+                
+                <div class="countdown-display">
+                    <div class="time-unit">
+                        <div class="time-value" id="days">0</div>
+                        <div class="time-label">Dagen</div>
+                    </div>
+                    
+                    <div class="separator">:</div>
+                    
+                    <div class="time-unit">
+                        <div class="time-value" id="hours">0</div>
+                        <div class="time-label">Uur</div>
+                    </div>
+                    
+                    <div class="separator">:</div>
+                    
+                    <div class="time-unit">
+                        <div class="time-value" id="minutes">0</div>
+                        <div class="time-label">Minuten</div>
+                    </div>
+                    
+                    <div class="separator">:</div>
+                    
+                    <div class="time-unit">
+                        <div class="time-value" id="seconds">0</div>
+                        <div class="time-label">Seconden</div>
+                    </div>
+                </div>
+
+                <div id="payment-message" class="payment-message" style="display: none;">
+                    <div class="payment-icon">💳</div>
+                    <h3>Je betalingen zijn begonnen!</h3>
+                    <p>Je loon wordt nu verwerkt en is zo beschikbaar op je rekening</p>
+                </div>
+
+                <div class="next-payday-info">
+                    <p>Volgende betaaldag: <span id="payday-date"></span></p>
+                </div>
+            </div>
+
+        </main>
+
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
